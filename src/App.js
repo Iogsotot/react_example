@@ -1,14 +1,22 @@
-import React from "react";
-import TodoList from "./Todo/TodoList";
-import Context from "./context";
-import AddTodo from "./Todo/AddTodo";
+import React, { useEffect } from 'react';
+import TodoList from './Todo/TodoList';
+import Context from './context';
+import AddTodo from './Todo/AddTodo';
 
 function App() {
   const [todos, setTodos] = React.useState([
-    { id: 1, completed: false, title: "Купить сок" },
-    { id: 2, completed: false, title: "Потанцевать" },
-    { id: 3, completed: false, title: "Поспать" },
+    // { id: 1, completed: false, title: 'Купить сок' },
+    // { id: 2, completed: false, title: 'Потанцевать' },
+    // { id: 3, completed: false, title: 'Поспать' },
   ]);
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos?_limit=5')
+      .then((response) => response.json())
+      .then((todos) => {
+        setTodos(todos);
+      });
+  }, []);
 
   function toggleTodo(id) {
     setTodos(
@@ -17,7 +25,7 @@ function App() {
           todo.completed = !todo.completed;
         }
         return todo;
-      })
+      }),
     );
   }
 
@@ -26,23 +34,23 @@ function App() {
   }
 
   function addTodo(title) {
-    setTodos(todos.concat([{
-      title,
-      id: Date.now(),
-      complete: false,
-    }]))
+    setTodos(
+      todos.concat([
+        {
+          title,
+          id: Date.now(),
+          complete: false,
+        },
+      ]),
+    );
   }
 
   return (
     <Context.Provider value={{ removeTodo }}>
-      <div className="wrapper">
+      <div className='wrapper'>
         <h1>Today tasks:</h1>
         <AddTodo onCreate={addTodo} />
-        {todos.length ? (
-          <TodoList todos={todos} onToggle={toggleTodo} />
-        ) : (
-          <p>You have no tasks</p>
-        )}
+        {todos.length ? <TodoList todos={todos} onToggle={toggleTodo} /> : <p>You have no tasks</p>}
       </div>
     </Context.Provider>
   );
